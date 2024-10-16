@@ -1,11 +1,21 @@
 import mongoose from "mongoose";
 
-const connectMongoDb=async(uri)=>{
-    try{
-        await mongoose.connect(uri);
-        console.log("mongodb connected successfully");
-    }catch(error){
-        console.log(error);
+/**
+ * Connects to MongoDB using the provided URI.
+ * @param {string} uri - MongoDB connection string.
+ * @returns {Promise<void>} - Resolves if connected, logs error otherwise.
+ */
+const connectMongoDb = async (uri) => {
+    try {
+        await mongoose.connect(uri, {
+            useNewUrlParser: true,      // Ensures use of new URL parser
+            useUnifiedTopology: true,   // Enables unified topology engine
+        });
+        console.log("MongoDB connected successfully");
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        process.exit(1); // Optional: Exit process on connection failure
     }
-}
-export {connectMongoDb}
+};
+
+export { connectMongoDb };
