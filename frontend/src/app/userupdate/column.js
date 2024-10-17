@@ -1,42 +1,57 @@
-import Link from "next/link"
+import Link from "next/link";
 
-const columnsData = (handleRoleChange) =>{return [
-  {
-    Header: "SNo.",
-    accessor: (row, index) => index + 1,
-    id: "serialNumber"
-  },
-  {
-    Header: "UserName",
-    Cell:({row})=>(
+// Function to generate columns configuration for the table.
+// Takes a handleRoleChange function as a parameter to handle role updates.
+const columnsData = (handleRoleChange) => {
+  return [
+    {
+      // Column for Serial Number
+      Header: "SNo.",
+      accessor: (row, index) => index + 1, // Generates serial number based on row index.
+      id: "serialNumber", // Unique ID for this column.
+    },
+    {
+      // Column to display the user's full name.
+      Header: "UserName",
+      Cell: ({ row }) => (
         <span>
-            {row.original.firstname} {row.original.lastname}
+          {/* Concatenates first name and last name from the row data */}
+          {row.original.firstname} {row.original.lastname}
         </span>
-    )
-  },
-  {
-    Header: 'Update Role',
-    accessor: '_id',
-    Cell: ({row }) => (
-      <select
-        onChange={(e) => handleRoleChange(row.original._id, e.target.value)}
-        defaultValue={row.original.role}
-      >
-        {['admin', 'student', 'intern', 'user'].map((role) => (
-          <option key={role} value={role}>
-            {role}
-          </option>
-        ))}
-      </select>
-    ),
-  },
-  {
-    Header: 'give Remark',
-    Cell: ({row }) => (
-        <Link href={`/userupdate/${row.original._id}`} className='text-blue-600 underline cursor-pointer'>give Remark</Link>
       ),
+    },
+    {
+      // Column to update the user’s role.
+      Header: "Update Role",
+      accessor: "_id", // Accessor to get the user ID.
+      Cell: ({ row }) => (
+        <select
+          // Calls handleRoleChange with user ID and the new role value.
+          onChange={(e) => handleRoleChange(row.original._id, e.target.value)}
+          defaultValue={row.original.role} // Sets the current role as default.
+        >
+          {/* Dropdown options for role selection */}
+          {["admin", "student", "intern", "user"].map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
+        </select>
+      ),
+    },
+    {
+      // Column to navigate to a remark page for the user.
+      Header: "give Remark",
+      Cell: ({ row }) => (
+        <Link
+          href={`/userupdate/${row.original._id}`} // Dynamic link to user update page.
+          className="text-blue-600 underline cursor-pointer"
+        >
+          give Remark {/* Link text */}
+        </Link>
+      ),
+    },
+  ];
+};
 
-  }
-]
-}
-export {columnsData}
+export { columnsData };

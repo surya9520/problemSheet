@@ -2,22 +2,33 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // For navigation after logout
 
 const Navbar = () => {
-  const [role, setRole] = useState(null); // State to store the user's role
-  const [isAdminDropdownOpen, setAdminDropdownOpen] = useState(false); // Dropdown state
+  const [role, setRole] = useState(null); // User's role
+  const [isAdminDropdownOpen, setAdminDropdownOpen] = useState(false); // Admin dropdown state
+  const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false); // Profile dropdown state
+  const [userData, setUserData] = useState({ name: '', email: '' }); // User data
 
-  // Get the user's role from localStorage on component mount
+  const router = useRouter(); // Router instance for redirecting
+
+  // Fetch the user's role and data from localStorage on component mount
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    const parsedData = userData ? JSON.parse(userData) : null;
-    const userRole = parsedData ? parsedData.role : null;
-    setRole(userRole);
+    const user = localStorage.getItem('userData');
+    const parsedUser = user ? JSON.parse(user) : {};
+    setRole(parsedUser.role);
+    setUserData({ name: parsedUser.name, email: parsedUser.email });
   }, []);
 
-  // Toggle dropdown visibility
-  const toggleAdminDropdown = () => {
-    setAdminDropdownOpen(!isAdminDropdownOpen);
+  // Toggle visibility for dropdowns
+  const toggleAdminDropdown = () => setAdminDropdownOpen(!isAdminDropdownOpen);
+  const toggleProfileDropdown = () => setProfileDropdownOpen(!isProfileDropdownOpen);
+
+  // Logout function: clear localStorage, cookies, and redirect to home
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    router.push('/login'); // Redirect to home
   };
 
   return (
@@ -26,16 +37,41 @@ const Navbar = () => {
         <div className="text-white text-2xl font-bold">DSA</div>
 
         <div className="flex space-x-4 items-center">
-          <Link href="/" className="text-white hover:text-gray-300 transition duration-200">
+          <span onClick={(e)=>{router.push('/')}} className="text-white hover:text-gray-300 transition duration-200">
             Home
-          </Link>
-          <Link href="/about-us" className="text-white hover:text-gray-300 transition duration-200">
+          </span>
+          <span onClick={(e)=>{router.push('/aboutus')}} className="text-white hover:text-gray-300 transition duration-200">
             About Us
-          </Link>
-          <Link href="/profile" className="text-white hover:text-gray-300 transition duration-200">
-            Profile
-          </Link>
+          </span>
 
+          {/* Profile Dropdown */}
+          <div className="relative">
+            <button
+              onClick={toggleProfileDropdown}
+              className="text-white hover:text-gray-300 transition duration-200"
+            >
+              Profile ▼
+            </button>
+
+            {isProfileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div className="px-4 py-2 text-sm text-gray-800">
+                  <strong>Name:</strong> {userData.name}
+                </div>
+                <div className="px-4 py-2 text-sm text-gray-800">
+                  <strong>Email:</strong> {userData.email}
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Admin Panel (visible only for admins) */}
           {role === 'admin' && (
             <div className="relative">
               <button

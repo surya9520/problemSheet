@@ -101,12 +101,12 @@ const getSpecificSolution = async (req, res) => {
  * @route PUT /api/solution/update
  */
 const updateSolution = async (req, res) => {
-  const { solutionid: solutionId } = req.headers;
+  const { solutionid } = req.headers;
   const { language, solutionCode, approachName } = req.body;
 
   try {
     const updatedSolution = await Userdsa.findByIdAndUpdate(
-      solutionId,
+      solutionid,
       {
         $set: { language, solutionCode, approachName },
       },
@@ -114,7 +114,7 @@ const updateSolution = async (req, res) => {
     );
 
     if (!updatedSolution) {
-      return res.status(404).json({ msg: "Solution not found" });
+      return res.status(401).json({ msg: "Solution not found" });
     }
 
     res

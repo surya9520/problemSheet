@@ -92,10 +92,11 @@ const RemarkModal = ({ isOpen, onClose, solutionId, userId }) => {
     try {
       handleRemark();
       console.log(approachDetails);
-      const response = await fetch(`${url}api/solution/specific`, {
+      const response = await fetch(`${url}api/solution/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+           solutionId
         },
         body: JSON.stringify(approachDetails),
         credentials: "include",

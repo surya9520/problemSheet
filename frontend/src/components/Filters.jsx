@@ -1,77 +1,81 @@
-import { url } from "@/helper";
-import { useEffect, useState } from "react";
-import Select from "react-select";
+import { url } from "@/helper"; // Base URL import
+import { useEffect, useState } from "react"; // React hooks for state management and lifecycle
+import Select from "react-select"; // React-Select component for multi-select dropdowns
 
 const Filters = ({
-  filterInput,
-  setFilterInput,
-  questionType,
-  setQuestionType,
+  filterInput, 
+  setFilterInput, 
+  questionType, 
+  setQuestionType
 }) => {
+  // State for list data and tag options
   const [lists, setLists] = useState([]);
   const [dataStructure, setDataStructure] = useState([]);
   const [company, setCompany] = useState([]);
-  const [difficulty, setDifficulty] = useState("");
-  const [platform,setPlatform]=useState([]);
-  const [doptions, setDoptions] = useState([]);
-  const [coptions, setCoptions] = useState([]);
-  const [pltoptions, setPltoptions] = useState([]);
-  const [diffoptions, setDiffoptions] = useState([
-    { value: "", label: "none" },
-  ]);
+  const [difficulty, setDifficulty] = useState(""); // Difficulty state for single-select
+  const [platform, setPlatform] = useState([]);
 
+  // Options for select components
+  const [doptions, setDoptions] = useState([]); // Data structure options
+  const [coptions, setCoptions] = useState([]); // Company options
+  const [pltoptions, setPltoptions] = useState([]); // Platform options
+  const [diffoptions, setDiffoptions] = useState([{ value: "", label: "none" }]); // Difficulty options
+
+  // Handler for data structure multi-select changes
   const handleChange = (options) => {
-    setDataStructure(options);
-    console.log(dataStructure);
-    const dslist = options.map((val) => `${val.value}`);
-    console.log(dslist);
+    setDataStructure(options); // Update selected data structures
+    const dslist = options.map((val) => `${val.value}`); // Extract IDs from selected options
     setQuestionType((prev) => ({
       ...prev,
-      datastructure: dslist,
+      datastructure: dslist, // Update question type with selected data structures
     }));
   };
 
+  // Handler for platform multi-select changes
   const handleChangePlatform = (options) => {
-    setPlatform(options);
-    const pltlist = options.map((val) => `${val.value}`);
+    setPlatform(options); // Update selected platforms
+    const pltlist = options.map((val) => `${val.value}`); // Extract IDs
     setQuestionType((prev) => ({
       ...prev,
-      Platform: pltlist,
+      Platform: pltlist, // Update question type with platforms
     }));
   };
 
+  // Handler for company multi-select changes
   const handleChangeCompany = (options) => {
-    setCompany(options);
-    const complist = options.map((val) => `${val.value}`);
+    setCompany(options); // Update selected companies
+    const complist = options.map((val) => `${val.value}`); // Extract IDs
     setQuestionType((prev) => ({
       ...prev,
-      Company: complist,
+      Company: complist, // Update question type with selected companies
     }));
   };
+
+  // Handler for difficulty change (single-select)
   const handleChangediff = (options) => {
-    setDifficulty(options);
+    setDifficulty(options); // Update selected difficulty
     setQuestionType((prev) => ({
       ...prev,
-      Difficulty: options.value,
+      Difficulty: options.value, // Update question type with difficulty
     }));
   };
-  //fetch list
+
+  // Fetch lists from backend
   const fetchlist = async () => {
     const response = await fetch(`${url}api/admin/lists`, {
       method: "GET",
-      credentials: "include",
+      credentials: "include", // Include cookies for authentication
     });
     if (!response.ok) {
       const error = await response.json();
       console.error("Error fetching lists:", error.msg || "Something went wrong");
-      return
+      return;
     }
     const data = await response.json();
-    setLists(data);
-    console.log(data);
+    setLists(data); // Update lists state
   };
 
-  //fetch datastructure
+  // Fetch data structure tags from backend
   const fetchds = async () => {
     const response = await fetch(`${url}api/admin/tags/datastructures`, {
       method: "GET",
@@ -82,14 +86,14 @@ const Filters = ({
       throw new Error(error);
     }
     const data = await response.json();
-    const formatedOptions = data.map((val) => {
-      return { value: val._id, label: val.name };
-    });
-    setDoptions(formatedOptions);
-    console.log(data);
+    const formatedOptions = data.map((val) => ({
+      value: val._id,
+      label: val.name,
+    }));
+    setDoptions(formatedOptions); // Set data structure options
   };
 
-  //fetch company
+  // Fetch company tags from backend
   const fetchComp = async () => {
     const response = await fetch(`${url}api/admin/tags/companies`, {
       method: "GET",
@@ -100,14 +104,14 @@ const Filters = ({
       throw new Error(error);
     }
     const data = await response.json();
-    const formatedOptions = data.map((val) => {
-      return { value: val._id, label: val.name };
-    });
-    setCoptions(formatedOptions);
-    console.log(data);
+    const formatedOptions = data.map((val) => ({
+      value: val._id,
+      label: val.name,
+    }));
+    setCoptions(formatedOptions); // Set company options
   };
 
-  //fetch complexity
+  // Fetch difficulty levels from backend
   const fetchDiff = async () => {
     const response = await fetch(`${url}api/admin/tags/complexities`, {
       method: "GET",
@@ -118,14 +122,14 @@ const Filters = ({
       throw new Error(error);
     }
     const data = await response.json();
-    const formatedOptions = data.map((val) => {
-      return { value: val._id, label: val.level };
-    });
-    setDiffoptions((prev) => [...prev, ...formatedOptions]);
-    console.log(data);
+    const formatedOptions = data.map((val) => ({
+      value: val._id,
+      label: val.level,
+    }));
+    setDiffoptions((prev) => [...prev, ...formatedOptions]); // Set difficulty options
   };
 
-  //fetch platform
+  // Fetch platform tags from backend
   const fetchPlt = async () => {
     const response = await fetch(`${url}api/admin/tags/platforms`, {
       method: "GET",
@@ -136,34 +140,37 @@ const Filters = ({
       throw new Error(error);
     }
     const data = await response.json();
-    const formatedOptions = data.map((val) => {
-      return { value: val._id, label: val.name };
-    });
-    setPltoptions(formatedOptions);
-    console.log(data);
+    const formatedOptions = data.map((val) => ({
+      value: val._id,
+      label: val.name,
+    }));
+    setPltoptions(formatedOptions); // Set platform options
   };
 
+  // Fetch data on component mount
   useEffect(() => {
     fetchlist();
     fetchComp();
     fetchds();
     fetchDiff();
-    fetchPlt()
+    fetchPlt();
   }, []);
 
   return (
     <div className="flex justify-between mb-4">
+      {/* Input for searching */}
       <input
         value={filterInput}
         onChange={(e) => setFilterInput(e.target.value)}
         placeholder="Search..."
         className="border rounded p-2 w-1/3"
       />
+
+      {/* Dropdowns and Select components */}
       <div className="flex items-center space-x-2 content-around">
         <select
           id="questionType"
           value={questionType.list}
-          placeholder="List"
           onChange={(e) =>
             setQuestionType((prev) => ({
               ...prev,
@@ -179,44 +186,36 @@ const Filters = ({
             </option>
           ))}
         </select>
+
         <Select
           isMulti
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-          controlShouldRenderValue={false}
           value={dataStructure}
           onChange={handleChange}
           options={doptions}
-          placeholder="DataStructure"
+          placeholder="Data Structure"
         />
 
         <Select
           isMulti
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-          controlShouldRenderValue={false}
           value={platform}
           onChange={handleChangePlatform}
           options={pltoptions}
-          placeholder="platform"
+          placeholder="Platform"
         />
+
         <Select
           isMulti
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-          controlShouldRenderValue={false}
           value={company}
           onChange={handleChangeCompany}
           options={coptions}
-          placeholder="company"
+          placeholder="Company"
         />
+
         <Select
-          //   hideSelectedOptions={false}
-          //   controlShouldRenderValue={false}
           value={difficulty}
           onChange={handleChangediff}
           options={diffoptions}
-          placeholder="complexity"
+          placeholder="Complexity"
         />
       </div>
     </div>

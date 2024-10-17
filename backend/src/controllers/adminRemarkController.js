@@ -45,7 +45,7 @@ const getRemark = async (req, res) => {
     const review = await AdminRemark.findOne({ solutionId });
 
     if (!review) {
-      return res.status(404).json({ msg: "Remark not found" });
+      return res.status(200).json({ msg: "Remark not found" });
     }
 
     res.status(200).json(review);

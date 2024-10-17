@@ -3,19 +3,20 @@
 import { url } from "@/helper";
 import React, { useEffect, useState } from "react";
 
+// Modal component for submitting an approach to a solution
 const ApproachModal = ({ isOpen, onClose, solutionId }) => {
   const [approachDetails, setApproachDetails] = useState({
     language: "JavaScript",
     solutionCode: "",
     solutionId: "",
+    approachName: "", // Added to capture the approach name
   });
   const [adminRemark, setAdminRemark] = useState("");
 
+  // Fetch admin remarks and question details when the modal is opened
   useEffect(() => {
     const fetchRemark = async () => {
       try {
-        console.log("solution id", solutionId);
-
         const response = await fetch(`${url}api/admin/remark/${solutionId}`, {
           method: "GET",
           credentials: "include", // Include cookies for authentication
@@ -26,15 +27,10 @@ const ApproachModal = ({ isOpen, onClose, solutionId }) => {
         }
 
         const data = await response.json();
-        console.log(data);
-
-        if (data?.remark) {
-          setAdminRemark(data.remark); // Set fetched remark
-        } else {
-          setAdminRemark("No remarks available."); // Default message
-        }
+        setAdminRemark(data?.remark || "No remarks available."); // Default message if no remark
       } catch (error) {
         console.error("Error fetching remark:", error);
+        alert("Error fetching remark. Please try again."); // Alert user on error
       }
     };
 
@@ -45,23 +41,27 @@ const ApproachModal = ({ isOpen, onClose, solutionId }) => {
           headers: { solutionid: solutionId },
           credentials: "include",
         });
+
         if (!response.ok) {
-          throw new Error("Failed to fetch");
+          throw new Error("Failed to fetch question details");
         }
+
         const data = await response.json();
-        console.log(data);
         setApproachDetails(data);
       } catch (error) {
         console.error("Failed to fetch question details:", error);
+        alert("Error fetching question details. Please try again."); // Alert user on error
       }
     };
 
+    // Fetch data only if the modal is open and solutionId is provided
     if (isOpen && solutionId) {
       fetchRemark();
       fetchQuestionDetails();
     }
   }, [isOpen, solutionId]);
 
+  // Handle the submission of the solution
   const handleSubmit = async () => {
     if (!approachDetails.solutionCode) {
       alert("Please fill in the solution");
@@ -69,11 +69,11 @@ const ApproachModal = ({ isOpen, onClose, solutionId }) => {
     }
 
     try {
-      console.log(approachDetails);
-      const response = await fetch(`${url}api/solution/specific`, {
+      const response = await fetch(`${url}api/solution/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          solutionId
         },
         body: JSON.stringify(approachDetails),
         credentials: "include",
@@ -81,29 +81,28 @@ const ApproachModal = ({ isOpen, onClose, solutionId }) => {
 
       if (response.ok) {
         alert("Solution submitted successfully!");
-        onClose();
+        onClose(); // Close the modal on successful submission
       } else {
-        alert("Failed to submit the solution. Please try again.");
+        alert("Failed to submit the solution. Please try again."); // Alert on failure
       }
     } catch (error) {
       console.error("Error submitting solution:", error);
+      alert("An error occurred while submitting the solution. Please try again."); // Alert user on error
     }
   };
 
+  // If modal is not open, return null to avoid rendering
   if (!isOpen) return null;
-  console.log(approachDetails);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white w-1/2 p-6 rounded-lg shadow-lg">
         <div className="flex justify-between mb-4">
           <div>
-            <label className="block text-gray-700 font-semibold">
-              Approach Name
-            </label>
+            <label className="block text-gray-700 font-semibold">Approach Name</label>
             <input
               className="border-2 p-2 mt-1 rounded-lg focus:outline-none"
-              placeholder="enter approach name"
+              placeholder="Enter approach name"
               value={approachDetails.approachName}
               onChange={(e) =>
                 setApproachDetails({
@@ -114,9 +113,7 @@ const ApproachModal = ({ isOpen, onClose, solutionId }) => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 font-semibold">
-              Language
-            </label>
+            <label className="block text-gray-700 font-semibold">Language</label>
             <select
               className="border p-2 mt-1 border-gray-300 rounded"
               value={approachDetails.language}

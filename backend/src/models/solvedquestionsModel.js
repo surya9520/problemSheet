@@ -18,7 +18,7 @@ const solvedquestionsSchema = new Schema(
     },
     
     // Array of solutions associated with this solved question
-    solution: [
+    solutions: [
       {
         type: Schema.Types.ObjectId, // Each solution is represented by an ObjectId
         ref: "Userdsa", // Reference to the Userdsa model
