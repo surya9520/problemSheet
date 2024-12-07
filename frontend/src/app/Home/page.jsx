@@ -57,7 +57,7 @@ const DsaQuestionsTable = () => {
             credentials: "include", // Include credentials in the request
           }
         );
-        if (response.status === 401) { // If unauthorized, redirect to signup
+        if (response.status!=200) { // If unauthorized, redirect to signup
           router.push("/signup"); 
           alert("signup first") // Alert the user to sign up first
           return;

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // For navigation after logout
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // For navigation after logout
 
 const Navbar = () => {
   const [role, setRole] = useState(null); // User's role
   const [isAdminDropdownOpen, setAdminDropdownOpen] = useState(false); // Admin dropdown state
   const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false); // Profile dropdown state
-  const [userData, setUserData] = useState({ name: '', email: '' }); // User data
+  const [userData, setUserData] = useState({ name: "", email: "" }); // User data
 
   const router = useRouter(); // Router instance for redirecting
 
   // Fetch the user's role and data from localStorage on component mount
   useEffect(() => {
-    const user = localStorage.getItem('userData');
+    const user = localStorage.getItem("userData");
     const parsedUser = user ? JSON.parse(user) : {};
     setRole(parsedUser.role);
     setUserData({ name: parsedUser.name, email: parsedUser.email });
@@ -22,13 +22,15 @@ const Navbar = () => {
 
   // Toggle visibility for dropdowns
   const toggleAdminDropdown = () => setAdminDropdownOpen(!isAdminDropdownOpen);
-  const toggleProfileDropdown = () => setProfileDropdownOpen(!isProfileDropdownOpen);
+  const toggleProfileDropdown = () =>
+    setProfileDropdownOpen(!isProfileDropdownOpen);
 
   // Logout function: clear localStorage, cookies, and redirect to home
   const handleLogout = () => {
-    localStorage.removeItem('userData');
-    document.cookie = 'connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    router.push('/login'); // Redirect to home
+    localStorage.removeItem("userData");
+    document.cookie =
+      "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push("/login"); // Redirect to login
   };
 
   return (
@@ -37,10 +39,20 @@ const Navbar = () => {
         <div className="text-white text-2xl font-bold">DSA</div>
 
         <div className="flex space-x-4 items-center">
-          <span onClick={(e)=>{router.push('/')}} className="text-white hover:text-gray-300 transition duration-200">
+          <span
+            onClick={(e) => {
+              router.push("/");
+            }}
+            className="text-white hover:text-gray-300 transition duration-200"
+          >
             Home
           </span>
-          <span onClick={(e)=>{router.push('/aboutus')}} className="text-white hover:text-gray-300 transition duration-200">
+          <span
+            onClick={(e) => {
+              router.push("/aboutus");
+            }}
+            className="text-white hover:text-gray-300 transition duration-200"
+          >
             About Us
           </span>
 
@@ -72,7 +84,7 @@ const Navbar = () => {
           </div>
 
           {/* Admin Panel (visible only for admins) */}
-          {role === 'admin' && (
+          {role === "admin" && (
             <div className="relative">
               <button
                 onClick={toggleAdminDropdown}
