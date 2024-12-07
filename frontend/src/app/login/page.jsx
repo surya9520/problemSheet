@@ -30,7 +30,7 @@ const Login = () => {
             // Navigate to home page on success
             router.push('/');
         } catch (error) {
-            console.error(error); // Log any errors
+            alert(error.message); // Log any errors
         }
     };
 
