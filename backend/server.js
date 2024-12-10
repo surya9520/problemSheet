@@ -1,8 +1,9 @@
 import {app} from './src/app.js'
 import { connectMongoDb } from './src/config/db.js'
+const URI=process.env.URI;
 
 
-connectMongoDb('mongodb://127.0.0.1:27017/DSA?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.1')
+connectMongoDb(URI)
 
 app.get('/', (req, res) => {
     console.log('GET request to /');
